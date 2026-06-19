@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>HARAYUUYA不動産</title>
+  <title>マインクラフト不動産</title>
   <style>
     body {
       margin: 0; padding: 0;
@@ -156,44 +156,21 @@
       }
     ];
 
-    var cachedDriveImageIds = {};
-
+    // ページが開かれたら、GASを挟まずに「直接」一覧を描画する（超高速化）
     window.onload = function() {
       document.getElementById('total-count').innerText = propertyData.length;
-
-      // ★ここに新しくデプロイしたGASの「ウェブアプリURL」を貼り付けてください
-      var gasUrl = "https://script.google.com/macros/s/AKfycbxmccoK-X4TEN2ECdy5nfdy1kGAqNPhvIf1SmFadVYm26FUFTc_mhqVQGpi5d3mwFNn/exec"; 
-
-      document.getElementById('loading').innerHTML = 'データを読み込み中...';
-
-      // fetchを使ってGASから画像IDデータを安全に取得する（Instagram対策）
-      fetch(gasUrl)
-        .then(function(response) {
-          if (!response.ok) {
-            throw new Error('ネットワークのエラーが発生しました');
-          }
-          return response.json();
-        })
-        .then(function(imageIds) {
-          console.log('取得成功', imageIds);
-          cachedDriveImageIds = imageIds || {};
-          renderList();
-        })
-        .catch(function(error) {
-          console.error('エラー:', error);
-          document.getElementById('loading').innerHTML =
-            'データ取得エラー: ' + error.message;
-        });
+      document.getElementById('loading').style.display = 'none'; // ローディング非表示
+      renderList(); // 即座に描画
     };
 
+    // GitHubに直接アップロードした画像を読み込む関数
     function getImageUrl(fileName) {
-      var id = cachedDriveImageIds[fileName];
-      // 常時HTTPS通信にするため https に修正
-      return id ? 'https://googleusercontent.com/profile/picture/0' + id : '';
+      if (!fileName) return '';
+      // ファイル名に自動で「.png」をくっつけて、同じフォルダ内の画像を読み込みます
+      return './' + fileName + '.png'; 
     }
 
     function renderList() {
-      document.getElementById('loading').style.display = 'none';
       var listContainer = document.getElementById('property-list-container');
       listContainer.innerHTML = '';
       
