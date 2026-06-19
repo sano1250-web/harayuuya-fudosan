@@ -1,10 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>テスト</title>
+  <title>HARAYUUYA不動産</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background-color: #f4f4f2; color: #333;
+    }
+    header {
+      background-color: #fff; border-bottom: 2px solid #2d8c3c;
+      padding: 10px 15px; position: sticky; top: 0; z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .header-container {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo-box {
+      font-weight: 900; font-size: 24px; color: #2d8c3c;
+      letter-spacing: -1px; cursor: pointer; display: flex; align-items: baseline; gap: 6px;
+      user-select: none;
+    }
+    .logo-box:hover { opacity: 0.8; }
+    .logo-box span.suumo-o { color: #bbf200; }
+    .logo-box span.powered { font-size: 11px; color: #888; font-weight: bold; letter-spacing: 0; white-space: nowrap; }
+    .header-sub { font-size: 11px; color: #666; text-align: right; line-height: 1.2; }
+    .container { max-width: 1000px; margin: 15px auto; padding: 0 10px; }
+    .search-hero {
+      background-color: #fff; border: 3px solid #bbf200; border-radius: 8px;
+      padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .search-title { font-size: 14px; font-weight: bold; color: #2d8c3c; margin-bottom: 10px; }
+    .search-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .search-tags span {
+      background-color: #f4f4f2; padding: 4px 10px; border-radius: 20px; font-size: 11px;
+    }
+    .search-tags span.active { background-color: #2d8c3c; color: #fff; }
+    .result-count { font-size: 16px; font-weight: bold; margin-bottom: 12px; border-left: 4px solid #2d8c3c; padding-left: 8px; }
+    .result-count em { color: #ff3333; font-style: normal; font-size: 20px; margin: 0 3px; }
+    .property-card {
+      background-color: #fff; border: 1px solid #ddd; border-radius: 8px;
+      margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex; flex-wrap: wrap; overflow: hidden;
+    }
+    .property-image-area {
+      width: 320px; padding: 12px; background-color: #f9f9f9; border-right: 1px solid #eee;
+    }
+    .main-image { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; background: #eee; }
+    .sub-images { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
+    .sub-images img {
+      width: 50px; height: 38px; object-fit: cover; border-radius: 2px;
+      cursor: pointer; border: 1px solid #ccc; transition: 0.2s;
+    }
+    .sub-images img:hover { border-color: #2d8c3c; opacity: 0.8; }
+    .property-details { flex: 1; padding: 15px; min-width: 280px; display: flex; flex-direction: column; justify-content: space-between; }
+    .property-name { font-size: 18px; font-weight: bold; color: #111; margin-bottom: 12px; line-height: 1.4; }
+    .info-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+    .info-table th, .info-table td { border: 1px solid #eee; padding: 8px; text-align: left; }
+    .info-table th { background-color: #f0f8f0; color: #333; width: 75px; }
+    .price-text { color: #ff3333; font-weight: bold; font-size: 16px; }
+    .btn-wrap { text-align: right; margin-top: 10px; }
+    .btn-detail {
+      background: linear-gradient(to bottom, #ff9900, #ff7700); color: #fff;
+      padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px;
+      border: none; cursor: pointer; box-shadow: 0 3px 5px rgba(255,119,0,0.3); transition: 0.2s;
+    }
+    .btn-detail:hover { transform: translateY(-1px); box-shadow: 0 5px 10px rgba(255,119,0,0.4); }
+    .appeal-box {
+      background-color: #fff8e6; border-left: 5px solid #ff9900;
+      padding: 12px 15px; margin-bottom: 15px; font-size: 14px; line-height: 1.5; font-weight: bold;
+    }
+    .btn-back {
+      background-color: #666; color: #fff; padding: 8px 16px;
+      border-radius: 4px; border: none; margin-bottom: 15px; cursor: pointer;
+    }
+    #loading { text-align: center; padding: 40px 0; color: #666; }
+    .hidden { display: none !important; }
+
+    @media screen and (max-width: 600px) {
+      .header-container { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .logo-box { font-size: 18px; flex-wrap: wrap; }
+      .logo-box span.powered { display: block; width: 100%; font-size: 10px; margin-top: -5px; }
+      .header-sub { text-align: left; font-size: 10px; }
+      .property-image-area { width: 100%; border-right: none; border-bottom: 1px solid #eee; }
+      .property-details { padding: 12px; }
+      .btn-detail { width: 100%; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-  <h1>GitHub Pages テスト成功</h1>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-box" onclick="hideDetail()">
+        SUUUUUUUUUUUUUUUUUUUMO<span class="suumo-o">●</span>
+        <span class="powered">Powered by HARAYUUYA不動産</span>
+      </div>
+      <div class="header-sub">マイクラ世界の住まい探し応援サイト</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="list-view">
+      <div class="search-hero">
+        <div class="search-title">エリアから物件を検索</div>
+        <div class="search-tags">
+          <span class="active">すべてのエリア</span>
+          <span>白樺バイオーム</span>
+          <span>きのこバイオーム</span>
+          <span>地下</span>
+        </div>
+      </div>
+      <div class="result-count">物件一覧：<em id="total-count">-</em>件</div>
+      <div id="loading">読み込み中...</div>
+      <div id="property-list-container"></div>
+    </div>
+
+    <div id="detail-view" class="hidden">
+      <button class="btn-back" onclick="hideDetail()">＜ 一覧に戻る</button>
+      <div id="detail-container"></div>
+    </div>
+  </div>
+
+  <script>
+    var propertyData = [
+      {
+        name: "シェンワ 豆腐 西崎", address: "白樺バイオーム",
+        thumbnail: "2026-06-18_20.57.52",
+        subImages: ["2026-06-18_20.57.58", "2026-06-18_20.58.08", "2026-06-18_20.58.23", "2026-06-18_21.00.24", "2026-06-18_21.00.25", "2026-06-18_21.00.36", "2026-06-18_21.01.09"],
+        price: "エメラルド 20個", deposit: "なし", layout: "1K", traffic: "初期スポーン地点から徒歩10分",
+        appeal: "室内広々、令和8年6月18日新築<br>見晴らし抜群、駐輪場完備、駐車場はありません近隣の月極駐車場をご契約ください"
+      },
+      {
+        name: "えりんぎ（霜降り）（人ん家）", address: "きのこバイオーム",
+        thumbnail: "2026-06-18_19.30.29",
+        subImages: ["2026-06-18_19.30.36", "2026-06-18_19.30.41"],
+        price: "エメラルド 50個", deposit: "ダイヤ 1個", layout: "2DK", traffic: "海を渡って船で3日",
+        appeal: "コンパクトでおしゃれ！、必要なものはすべてきのこの中に<br>畑から近い"
+      },
+      {
+        name: "おしゃれハウス（人ん家）", address: "白樺バイオーム",
+        thumbnail: "2026-06-18_19.30.05",
+        subImages: ["2026-06-18_19.28.14", "2026-06-18_19.29.44", "2026-06-18_19.29.45", "2026-06-18_19.29.57"],
+        price: "ダイヤ5000兆個", deposit: "なし", layout: "3LDK", traffic: "白樺の森 駅徒歩5分",
+        appeal: "海から徒歩5歩！、抜群のロケーション<br>令和8年6月18日新築<br>本当はもっと写真を取りたかったけど、サーバー管理者の権限で立ち入り禁止にされていましたキレていいか"
+      },
+      {
+        name: "ニューガーデン VIVANT館", address: "地下",
+        thumbnail: "2026-06-18_21.03.19",
+        subImages: ["2026-06-18_21.03.24", "2026-06-18_21.03.35", "2026-06-18_21.03.41", "2026-06-18_21.03.48", "2026-06-18_21.03.53", "2026-06-18_21.03.30"],
+        price: "鉄インゴット 30個", deposit: "金インゴット 2個", layout: "地下要塞", traffic: "地下拠点よりトロッコで3分",
+        appeal: "堅牢な地下拠点、地上の畑、地下の畑完備、地下農園完備、かぼちゃランタン備え付け、地下渓谷まで徒歩10分、遊歩道完備<br>ブランチマイニング拠点にも最適、雑魚寝方式ですが、個別チェスト完備、セキュリティも安心"
+      }
+    ];
+
+    var cachedDriveImageIds = {};
+
+    window.onload = function() {
+      document.getElementById('total-count').innerText = propertyData.length;
+
+      // ★ここに新しくデプロイしたGASの「ウェブアプリURL」を貼り付けてください
+      var gasUrl = "https://script.google.com/macros/s/AKfycbxmccoK-X4TEN2ECdy5nfdy1kGAqNPhvIf1SmFadVYm26FUFTc_mhqVQGpi5d3mwFNn/exec"; 
+
+      document.getElementById('loading').innerHTML = 'データを読み込み中...';
+
+      // fetchを使ってGASから画像IDデータを安全に取得する（Instagram対策）
+      fetch(gasUrl)
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('ネットワークのエラーが発生しました');
+          }
+          return response.json();
+        })
+        .then(function(imageIds) {
+          console.log('取得成功', imageIds);
+          cachedDriveImageIds = imageIds || {};
+          renderList();
+        })
+        .catch(function(error) {
+          console.error('エラー:', error);
+          document.getElementById('loading').innerHTML =
+            'データ取得エラー: ' + error.message;
+        });
+    };
+
+    function getImageUrl(fileName) {
+      var id = cachedDriveImageIds[fileName];
+      // 常時HTTPS通信にするため https に修正
+      return id ? 'https://googleusercontent.com/profile/picture/0' + id : '';
+    }
+
+    function renderList() {
+      document.getElementById('loading').style.display = 'none';
+      var listContainer = document.getElementById('property-list-container');
+      listContainer.innerHTML = '';
+      
+      propertyData.forEach(function(item, index) {
+        var mainImageSrc = getImageUrl(item.thumbnail);
+        var allImgs = [item.thumbnail].concat(item.subImages);
+        var subHtml = '<div class="sub-images">';
+        allImgs.forEach(function(imgName) {
+          var src = getImageUrl(imgName);
+          if(src) {
+            subHtml += '<img src="' + src + '" onclick="document.getElementById(\'list-img-\' + index + \').src=\'' + src + '\'; event.stopPropagation();">';
+          }
+        });
+        subHtml += '</div>';
+
+        var cardHtml = 
+          '<div class="property-card">' +
+            '<div class="property-image-area">' +
+              '<img class="main-image" id="list-img-' + index + '" src="' + mainImageSrc + '" alt="外観">' +
+              subHtml +
+            '</div>' +
+            '<div class="property-details">' +
+              '<div>' +
+                '<div class="property-name">' + item.name + '</div>' +
+                '<table class="info-table">' +
+                  '<tr><th>販売価格</th><td><span class="price-text">' + item.price + '</span></td></tr>' +
+                  '<tr><th>所在地</th><td>' + item.address + '</td></tr>' +
+                '</table>' +
+              '</div>' +
+              '<div class="btn-wrap">' +
+                '<button class="btn-detail" onclick="showDetail(' + index + ')">詳細を見る</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        
+        listContainer.innerHTML += cardHtml;
+      });
+    }
+
+    function showDetail(index) {
+      var item = propertyData[index];
+      document.getElementById('list-view').classList.add('hidden');
+      document.getElementById('detail-view').classList.remove('hidden');
+      window.scrollTo(0, 0);
+
+      var mainImageSrc = getImageUrl(item.thumbnail);
+      var allImgs = [item.thumbnail].concat(item.subImages);
+      
+      var subHtml = '<div class="sub-images" style="margin-bottom:15px;">';
+      allImgs.forEach(function(imgName) {
+        var src = getImageUrl(imgName);
+        if(src) {
+          subHtml += '<img src="' + src + '" style="width:80px; height:60px;" onclick="document.getElementById(\'det-img\').src=\'' + src + '\'">';
+        }
+      });
+      subHtml += '</div>';
+
+      var detailHtml = 
+        '<div class="property-card" style="display:block; padding:15px;">' +
+          '<div class="property-name" style="font-size:22px;">' + item.name + '</div>' +
+          '<div class="appeal-box">' + item.appeal + '</div>' +
+          '<img class="main-image" id="det-img" src="' + mainImageSrc + '" style="height:auto; max-height:500px; width:100%;">' +
+          subHtml +
+          '<table class="info-table">' +
+            '<tr><th>販売価格</th><td><span class="price-text">' + item.price + '</span></td><th>管理費</th><td>' + item.deposit + '</td></tr>' +
+            '<tr><th>間取り</th><td>' + item.layout + '</td><th>交通</th><td>' + item.traffic + '</td></tr>' +
+            '<tr><th>所在地</th><td colspan="3">' + item.address + '</td></tr>' +
+          '</table>' +
+          '<div style="text-align:center; margin:30px 0;">' +
+            '<button class="btn-detail" style="font-size:18px; padding:15px 40px;" onclick="alert(\'問い合わせ完了！\')">✉️ この物件について問い合わせる</button>' +
+          '</div>' +
+        '</div>';
+
+      document.getElementById('detail-container').innerHTML = detailHtml;
+    }
+
+    function hideDetail() {
+      document.getElementById('detail-view').classList.add('hidden');
+      document.getElementById('list-view').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+  </script>
 </body>
 </html>
